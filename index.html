@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài tập 24 - Đèn Kéo Quân &amp; Tổng hợp 17-22 | Lê Quốc Thắng (231A010524)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      color: #38bdf8;
+      margin-bottom: 0.4rem;
+    }
+    .student-info {
+      display: inline-block;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid #334155;
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      margin-top: 0.35rem;
+    }
+    nav {
+      max-width: 980px;
+      margin: 1.25rem auto 0;
+      padding: 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.55rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #e2e8f0;
+      background: #1e293b;
+      border: 1px solid #475569;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    nav a:hover, nav a.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+    nav a.skipped {
+      opacity: 0.65;
+      border-style: dashed;
+    }
+    .lantern-section {
+      padding: 2.25rem 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .lantern-status {
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid #334155;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .lantern-status span {
+      color: #4ade80;
+      font-weight: 700;
+    }
+    .lantern-status.paused span {
+      color: #facc15;
+    }
+    .scene {
+      width: 240px;
+      height: 260px;
+      perspective: 1100px;
+      margin: 1rem auto 1.5rem;
+    }
+    .lantern {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: spinLantern 18s linear infinite;
+    }
+    .lantern.paused {
+      animation-play-state: paused;
+    }
+    @keyframes spinLantern {
+      from {
+        transform: rotateY(0deg);
+      }
+      to {
+        transform: rotateY(360deg);
+      }
+    }
+    .face {
+      position: absolute;
+      width: 150px;
+      height: 210px;
+      left: 45px;
+      top: 25px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+      background: #0f172a;
+      backface-visibility: visible;
+    }
+    .face img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+    .face-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.88);
+      color: #f8fafc;
+      font-size: 0.78rem;
+      text-align: center;
+      padding: 0.25rem;
+      font-weight: 600;
+    }
+    .face:nth-child(1) { transform: rotateY(0deg) translateZ(130px); }
+    .face:nth-child(2) { transform: rotateY(60deg) translateZ(130px); }
+    .face:nth-child(3) { transform: rotateY(120deg) translateZ(130px); }
+    .face:nth-child(4) { transform: rotateY(180deg) translateZ(130px); }
+    .face:nth-child(5) { transform: rotateY(240deg) translateZ(130px); }
+    .face:nth-child(6) { transform: rotateY(300deg) translateZ(130px); }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    button.ctrl-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.ctrl-btn:hover {
+      background: #1d4ed8;
+    }
+    .links-grid {
+      max-width: 980px;
+      margin: 2rem auto;
+      padding: 0 1rem 2.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card.skipped-card {
+      border-style: dashed;
+      opacity: 0.75;
+    }
+    .card h3 {
+      font-size: 1.08rem;
+      color: #7dd3fc;
+      margin-bottom: 0.35rem;
+    }
+    .card p {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      margin-bottom: 0.85rem;
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .card a.branch-link {
+      display: inline-block;
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+    .card a.branch-link:hover {
+      text-decoration: underline;
+    }
+    .card a.ext-link {
+      display: inline-block;
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 0.84rem;
+      word-break: break-all;
+    }
+    .card a.ext-link:hover {
+      text-decoration: underline;
+    }
+    .badge-skip {
+      display: inline-block;
+      background: rgba(148, 163, 184, 0.15);
+      color: #cbd5e1;
+      border: 1px solid #475569;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      width: fit-content;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border-top: 1px solid #334155;
+      color: #94a3b8;
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bài tập 24 – Đèn Kéo Quân (JavaScript)</h1>
+    <div class="student-info">
+      <strong>Lê Quốc Thắng</strong> • MSSV: <strong>231A010524</strong> • CNTT K23 – Đại học Văn Hiến
+    </div>
+  </header>
+
+  <nav aria-label="Menu bài tập 17 đến 22">
+    <a href="index.html" class="active">Đèn kéo quân (BT24)</a>
+    <a href="bai17.html">Bài tập 17 (3 ảnh)</a>
+    <a href="bai18.html" class="skipped">Bài tập 18 (Bỏ qua)</a>
+    <a href="bai19.html">Bài tập 19 (1 ảnh + link)</a>
+    <a href="bai20.html">Bài tập 20 (2 ảnh)</a>
+    <a href="bai21.html">Bài tập 21 (4 ảnh + 3 link)</a>
+    <a href="bai22.html">Bài tập 22 (1 ảnh + link)</a>
+  </nav>
+
+  <section class="lantern-section">
+    <div id="statusBox" class="lantern-status">
+      Trạng thái đèn kéo quân: <span id="statusText">Đang quay vòng tròn</span>
+    </div>
+
+    <div class="scene">
+      <div id="lantern" class="lantern">
+        <div class="face" data-face="Mặt 1">
+          <img src="images/face1.jpg" alt="Hình ảnh Lê Quốc Thắng - Mặt 1">
+          <div class="face-label">Mặt 1 • 231A010524</div>
+        </div>
+        <div class="face" data-face="Mặt 2">
+          <img src="images/face2.jpg" alt="Hình ảnh Lê Quốc Thắng - Mặt 2">
+          <div class="face-label">Mặt 2 • Lê Quốc Thắng</div>
+        </div>
+        <div class="face" data-face="Mặt 3">
+          <img src="images/face3.jpg" alt="Hình ảnh Lê Quốc Thắng - Mặt 3">
+          <div class="face-label">Mặt 3 • CNTT K23</div>
+        </div>
+        <div class="face" data-face="Mặt 4">
+          <img src="images/face4.jpg" alt="Hình ảnh Lê Quốc Thắng - Mặt 4">
+          <div class="face-label">Mặt 4 • ĐH Văn Hiến</div>
+        </div>
+        <div class="face" data-face="Mặt 5">
+          <img src="images/face5.jpg" alt="Hình ảnh Lê Quốc Thắng - Mặt 5">
+          <div class="face-label">Mặt 5 • Web &amp; Net</div>
+        </div>
+        <div class="face" data-face="Mặt 6">
+          <img src="images/face6.jpg" alt="Hình ảnh Lê Quốc Thắng - Mặt 6">
+          <div class="face-label">Mặt 6 • Portfolio</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="toggleBtn" class="ctrl-btn" type="button">Tạm dừng / Quay tiếp</button>
+    </div>
+  </section>
+
+  <section class="links-grid">
+    <article class="card">
+      <div>
+        <h3>Bài tập 17 (3 ảnh kết quả)</h3>
+        <p>Tên miền <code>lqthangvhu.ifree.page</code> (IP <code>185.27.134.153</code>, tài khoản <code>if0_43509227</code>, thư mục <code>htdocs</code>).</p>
+      </div>
+      <div class="card-actions">
+        <a href="bai17.html" class="branch-link">Xem 3 ảnh kết quả Bài tập 17 →</a>
+      </div>
+    </article>
+
+    <article class="card skipped-card">
+      <div>
+        <h3>Bài tập 18 (Bỏ qua)</h3>
+        <p>Sinh viên không làm / bỏ qua Bài tập 18.</p>
+      </div>
+      <div class="card-actions">
+        <span class="badge-skip">Bỏ qua (Không làm)</span>
+      </div>
+    </article>
+
+    <article class="card">
+      <div>
+        <h3>Bài tập 19 (1 ảnh + 1 link)</h3>
+        <p>Portfolio cá nhân triển khai trên GitHub Pages.</p>
+      </div>
+      <div class="card-actions">
+        <a href="bai19.html" class="branch-link">Xem ảnh &amp; link Bài tập 19 →</a>
+        <a href="https://lqt1375-a11y.github.io/my-portfolio/" target="_blank" rel="noopener noreferrer" class="ext-link">https://lqt1375-a11y.github.io/my-portfolio/</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div>
+        <h3>Bài tập 20 (2 ảnh kết quả)</h3>
+        <p>Kết quả bài trắc nghiệm trực tuyến (10.00/10 và 9.80/10).</p>
+      </div>
+      <div class="card-actions">
+        <a href="bai20.html" class="branch-link">Xem 2 ảnh kết quả Bài tập 20 →</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div>
+        <h3>Bài tập 21 (4 ảnh + 3 link)</h3>
+        <p>Triển khai đa nền tảng (GitHub Pages, Cloudflare Workers, Netlify) và ảnh xác minh Vercel.</p>
+      </div>
+      <div class="card-actions">
+        <a href="bai21.html" class="branch-link">Xem 4 ảnh &amp; 3 link Bài tập 21 →</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <div>
+        <h3>Bài tập 22 (1 ảnh + 1 link)</h3>
+        <p>Portfolio deploy trên Netlify (<code>portfolio-bt8.netlify.app</code>).</p>
+      </div>
+      <div class="card-actions">
+        <a href="bai22.html" class="branch-link">Xem ảnh &amp; link Bài tập 22 →</a>
+        <a href="https://portfolio-bt8.netlify.app/" target="_blank" rel="noopener noreferrer" class="ext-link">https://portfolio-bt8.netlify.app/</a>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    © 2026 Lê Quốc Thắng • MSSV: 231A010524 • Trường Đại học Văn Hiến
+  </footer>
+
+  <script>
+    const lantern = document.getElementById('lantern');
+    const faces = document.querySelectorAll('.face');
+    const statusBox = document.getElementById('statusBox');
+    const statusText = document.getElementById('statusText');
+    const toggleBtn = document.getElementById('toggleBtn');
+
+    let manualPause = false;
+
+    function pauseLantern(reasonText) {
+      lantern.classList.add('paused');
+      statusBox.classList.add('paused');
+      statusText.textContent = reasonText;
+    }
+
+    function resumeLantern() {
+      if (!manualPause) {
+        lantern.classList.remove('paused');
+        statusBox.classList.remove('paused');
+        statusText.textContent = 'Đang quay vòng tròn';
+      }
+    }
+
+    faces.forEach((face) => {
+      const label = face.getAttribute('data-face');
+      face.addEventListener('mouseenter', () => {
+        pauseLantern(`Đang dừng tại ${label} (Rê chuột ra để quay tiếp)`);
+      });
+      face.addEventListener('mouseleave', () => {
+        resumeLantern();
+      });
+      face.addEventListener('click', () => {
+        if (lantern.classList.contains('paused')) {
+          manualPause = false;
+          resumeLantern();
+        } else {
+          manualPause = true;
+          pauseLantern(`Đang dừng tại ${label} (Chạm lại để quay tiếp)`);
+        }
+      });
+    });
+
+    toggleBtn.addEventListener('click', () => {
+      if (lantern.classList.contains('paused')) {
+        manualPause = false;
+        resumeLantern();
+      } else {
+        manualPause = true;
+        pauseLantern('Đã tạm dừng đèn kéo quân');
+      }
+    });
+  </script>
+</body>
+</html>
